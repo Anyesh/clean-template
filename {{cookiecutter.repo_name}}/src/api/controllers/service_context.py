@@ -1,7 +1,7 @@
 import logging
 
 from dependency_injector.wiring import inject, Provide
-from flask import Blueprint
+from flask import Blueprint, current_app
 
 from src.api.middleware import post_data_required
 from src.api.responses import create_response

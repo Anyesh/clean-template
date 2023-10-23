@@ -72,9 +72,7 @@ class Repository(ABC):
         return self.create_pagination(query_params, query_set)
 
     def get(self, object_id):
-        return self.session.query(self.base_class).filter_by(id=object_id).first_or_404(
-            self.DEFAULT_NOT_FOUND_MESSAGE
-        )
+        return self.session.query(self.base_class).filter_by(id=object_id).one()
 
     def _apply_query_params(self, query, query_params):
         return query
@@ -93,7 +91,7 @@ class Repository(ABC):
     def find(self, query_params):
         query = self.session.query(self.base_class)
         query = self.apply_query_params(query, query_params)
-        return query.first_or_404(self.DEFAULT_NOT_FOUND_MESSAGE)
+        return query.one()
 
     def count(self, query_params=None):
         query = self.session.query(self.base_class)

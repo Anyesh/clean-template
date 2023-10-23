@@ -1,9 +1,10 @@
-from src.infrastructure.databases import Base as SQLAlchemyBase, sqlalchemy_db as db
-from sqlalchemy.orm import MappedAsDataclass, Mapped, mapped_column
+from src.infrastructure.databases import declarative_base
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import Integer, Boolean
 
 
 
-class ServiceContext(MappedAsDataclass, SQLAlchemyBase):
+class ServiceContext(declarative_base):
     __tablename__ = 'service_context'
-    id: Mapped[int] = mapped_column(db.Integer, primary_key=True, init=False)
-    maintenance: Mapped[bool] = mapped_column(db.Boolean, default=False)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, init=False)
+    maintenance: Mapped[bool] = mapped_column(Boolean, default=False)

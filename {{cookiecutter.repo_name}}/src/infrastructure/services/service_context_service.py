@@ -3,7 +3,7 @@ from src.infrastructure.repositories import ServiceContextRepository
 
 
 class ServiceContextService:
-    def __init__(self, repository: ServiceContextRepository = None):
+    def __init__(self, repository: ServiceContextRepository | None = None):
         self.repository = repository or ServiceContextRepository()
 
     def update(self, data):

@@ -1,4 +1,6 @@
-from .sql_alchemy import Base, setup_sqlalchemy, sqlalchemy_db
+from .sql_alchemy import setup_sqlalchemy, Base as declarative_base
+from .redis_db import setup_redis
 
-__all__ = ["setup_sqlalchemy", "sqlalchemy_db", "Base"]
+__all__ = ["setup_sqlalchemy", "declarative_base", "setup_redis"]
+
 
