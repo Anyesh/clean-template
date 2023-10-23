@@ -1,24 +1,26 @@
-from src.infrastructure.models import ServiceContext
-from src.infrastructure.databases import sqlalchemy_db as db
+from src.domain.models import ServiceContext
+from src.infrastructure.repositories import ServiceContextRepository
 
 
 class ServiceContextService:
+    def __init__(self, repository: ServiceContextRepository = None):
+        self.repository = repository or ServiceContextRepository()
 
     def update(self, data):
-        service_context = ServiceContext.query.first()
+        service_context = self.repository.get_first()
 
         if service_context is None:
             service_context = ServiceContext()
-            service_context.save(db)
+            self.repository.save(service_context)
 
-        service_context.update(db, data)
+        self.repository.update(service_context.id, data)
         return service_context
 
     def get_service_context(self):
-        status = ServiceContext.query.first()
+        status = self.repository.get_first()
 
         if status is None:
-            status = ServiceContext()
-            status.save(db)
+            enitity = ServiceContext()
+            return self.repository.save(enitity)
 
         return status

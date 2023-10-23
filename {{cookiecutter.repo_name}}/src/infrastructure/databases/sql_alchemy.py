@@ -1,9 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
-
+from sqlalchemy.orm import DeclarativeBase
 from src.domain import SQLALCHEMY_DATABASE_URI, OperationalException
 
-sqlalchemy_db = SQLAlchemy()
-Model = sqlalchemy_db.Model
+class Base(DeclarativeBase):
+    ...
+
+sqlalchemy_db = SQLAlchemy(model_class=Base)
 
 
 class SQLAlchemyAdapter:

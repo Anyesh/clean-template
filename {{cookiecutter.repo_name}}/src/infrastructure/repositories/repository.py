@@ -11,7 +11,7 @@ from src.domain import (
     PER_PAGE,
     ApiException,
 )
-from src.infrastructure import sqlalchemy_db as db
+from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -21,35 +21,49 @@ class Repository(ABC):
     DEFAULT_NOT_FOUND_MESSAGE = "The requested resource was not found"
     DEFAULT_PER_PAGE = DEFAULT_PER_PAGE_VALUE
     DEFAULT_PAGE = DEFAULT_PAGE_VALUE
+    session = None
+
+    def __init__(self, session=None):
+        self.session = session or current_app.db.session
+
+    def save(self, entity):
+        self.session.add(entity)
+        self.session.flush()
+        return entity
 
     def create(self, data):
         created_object = self.base_class(**data)
-        db.session.add(created_object)
-        db.session.flush()
+        self.session.add(created_object)
+        self.session.flush()
         return created_object
 
     def update(self, object_id, data):
         update_object = self.get(object_id)
-        update_object.update(db, data)
+        for attr, value in data.items():
+            setattr(update_object, attr, value)
+
+        self.session.add(update_object)
+        self.session.flush()
         return update_object
 
     def delete(self, object_id):
         delete_object = self.get(object_id)
-        delete_object.delete(db)
+        self.session.delete(delete_object)
+        self.session.flush()
         return delete_object
 
     def delete_all(self, query_params):
         if query_params is None:
             raise ApiException("No parameters are required")
 
-        query_set = self.base_class.query
+        query_set = self.session.query(self.base_class)
         query_set = self.apply_query_params(query_set, query_params)
         query_set.delete()
-        db.session.flush()
+        self.session.flush()
         return query_set
 
     def get_all(self, query_params=None):
-        query_set = self.base_class.query
+        query_set = self.session.query(self.base_class)
         query_set = self.apply_query_params(query_set, query_params)
 
         if self.is_itemized(query_params):
@@ -58,7 +72,7 @@ class Repository(ABC):
         return self.create_pagination(query_params, query_set)
 
     def get(self, object_id):
-        return self.base_class.query.filter_by(id=object_id).first_or_404(
+        return self.session.query(self.base_class).filter_by(id=object_id).first_or_404(
             self.DEFAULT_NOT_FOUND_MESSAGE
         )
 
@@ -72,17 +86,17 @@ class Repository(ABC):
         return query
 
     def exists(self, query_params):
-        query = self.base_class.query
+        query = self.session.query(self.base_class)
         query = self.apply_query_params(query, query_params)
         return query.first() is not None
 
     def find(self, query_params):
-        query = self.base_class.query
+        query = self.session.query(self.base_class)
         query = self.apply_query_params(query, query_params)
         return query.first_or_404(self.DEFAULT_NOT_FOUND_MESSAGE)
 
     def count(self, query_params=None):
-        query = self.base_class.query
+        query = self.session.query(self.base_class)
         query = self.apply_query_params(query, query_params)
         return query.count()
 

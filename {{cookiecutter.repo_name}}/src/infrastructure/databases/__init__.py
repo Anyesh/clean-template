@@ -1,3 +1,4 @@
-from .sql_alchemy import Model, setup_sqlalchemy, sqlalchemy_db
+from .sql_alchemy import Base, setup_sqlalchemy, sqlalchemy_db
 
-__all__ = ["setup_sqlalchemy", "sqlalchemy_db", "Model"]
+__all__ = ["setup_sqlalchemy", "sqlalchemy_db", "Base"]
+
