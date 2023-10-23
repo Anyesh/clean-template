@@ -27,7 +27,7 @@ class Config(object):
     ]
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.environ.get(SQLALCHEMY_DATABASE_URI)
-    SERVICE_PREFIX = os.environ.get(SERVICE_PREFIX, '')
+    SERVICE_PREFIX = os.environ.get(SERVICE_PREFIX, "")
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item

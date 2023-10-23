@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from src.domain import SQLALCHEMY_DATABASE_URI, OperationalException
 
 sqlalchemy_db = SQLAlchemy()
+Model = sqlalchemy_db.Model
 
 
 class SQLAlchemyAdapter:
@@ -11,6 +12,7 @@ class SQLAlchemyAdapter:
 
         if app.config[SQLALCHEMY_DATABASE_URI] is not None:
             sqlalchemy_db.init_app(app)
+            app.db = sqlalchemy_db
         elif not app.config["TESTING"]:
             raise OperationalException("SQLALCHEMY_DATABASE_URI not set")
 

@@ -17,6 +17,7 @@ def create_app(
     dependency_container_modules=None,
 ):
     app = Flask(__name__.split('.')[0])
+    app.db = None
     app = setup_logging(app)
     app.config.from_object(config)
     app = setup_dependency_container(app)
@@ -25,7 +26,7 @@ def create_app(
     app.url_map.strict_slashes = False
     app = setup_prefix_middleware(app, prefix=app.config[SERVICE_PREFIX])
     app = setup_blueprints(app)
-    app = setup_sqlalchemy(app)
+    app = setup_sqlalchemy(app)  # app.db will be available after this
     app = setup_error_handler(app)
     app = setup_management(app)
 
