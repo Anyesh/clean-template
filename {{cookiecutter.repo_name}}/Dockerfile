@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.11.5
 
 RUN apt-get -qq update
 RUN pip install --upgrade pip && pip install pip-tools
