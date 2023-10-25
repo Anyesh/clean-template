@@ -12,20 +12,6 @@ logger = logging.getLogger(__name__)
 blueprint = Blueprint('service_context', __name__)
 
 
-# @blueprint.route('/service-context', methods=['PATCH'])
-# @post_data_required
-# @inject
-# def update_service_context(
-#     json_data,
-#     service_context_service=Provide[
-#         DependencyContainer.service_context_service
-#     ]
-# ):
-#     validated_data = ServiceContextSchema().load(json_data)
-#     service_context = service_context_service.update(validated_data)
-#     return create_response(service_context, ServiceContextSchema)
-
-
 @blueprint.route('/service-context', methods=['GET'])
 @inject
 def get_service_status(

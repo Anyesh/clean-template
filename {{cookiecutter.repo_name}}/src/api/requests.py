@@ -10,10 +10,7 @@ def normalize_query_param(value):
 
     if len(value) == 1 and value[0].lower() in ["true", "false"]:
 
-        if value[0].lower() == "true":
-            return True
-        return False
-
+        return value[0].lower() == "true"
     return value if len(value) > 1 else value[0]
 
 

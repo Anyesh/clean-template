@@ -3,7 +3,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .domain import LOG_LEVEL, REDIS_URL, SERVICE_PREFIX, SQLALCHEMY_DATABASE_URI
+from .domain import (
+    LOG_LEVEL,
+    REDIS_URL,
+    SECRET_KEY,
+    SERVICE_PREFIX,
+    SQLALCHEMY_DATABASE_URI,
+)
 
 PROJECT_ROOT = str(Path(__file__).parent.parent)
 load_dotenv()
@@ -30,6 +36,10 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get(SQLALCHEMY_DATABASE_URI)
     REDIS_URL = os.environ.get(REDIS_URL)
     SERVICE_PREFIX = os.environ.get(SERVICE_PREFIX, "")
+    SECRET_KEY = os.environ.get(SECRET_KEY, "secret-key")
+    SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", "localhost")
+    SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "session")
+    SESSION_COOKIE_AGE = os.environ.get("SESSION_COOKIE_AGE", 3600)
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item

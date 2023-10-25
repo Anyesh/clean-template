@@ -10,7 +10,7 @@ from src.domain import ClientException, ApiException
 logger = logging.getLogger(__name__)
 
 
-def setup_error_handler(app) -> None:
+def setup_error_handler(app):
     """
     Function that will register all the specified error handlers for the app
     """
@@ -41,6 +41,8 @@ def setup_error_handler(app) -> None:
     def error_handler(error):
         logger.error("exception of type {} occurred".format(type(error)))
         logger.exception(error)
+        # Rollback any database changes that might have happened
+        app.db.session.rollback()
 
         if isinstance(error, HTTPException):
             return create_error_response(str(error), error.code)
