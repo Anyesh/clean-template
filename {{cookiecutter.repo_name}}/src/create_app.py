@@ -1,6 +1,5 @@
 from flask import Flask
 
-from src import api
 from src.api import setup_prefix_middleware, setup_blueprints
 from src.cors import setup_cors
 from src.dependency_container import setup_dependency_container
@@ -20,15 +19,13 @@ def create_app(
     app.db = None
     app = setup_logging(app)
     app.config.from_object(config)
-    app = setup_dependency_container(app)
-    app.container.wire(packages=[api])
     app = setup_cors(app)
     app.url_map.strict_slashes = False
     app = setup_prefix_middleware(app, prefix=app.config[SERVICE_PREFIX])
     app = setup_blueprints(app)
     app = setup_sqlalchemy(app)  # app.db will be available after this
+    app = setup_redis(app)  # app.redis will be available after this
     app = setup_error_handler(app)
-    app = setup_redis(app)
     app = setup_management(app)
 
     # Dependency injection container initialization should be done last
