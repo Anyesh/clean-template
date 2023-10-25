@@ -1,6 +1,4 @@
 Flask==2.2.2
-Flask-SQLAlchemy==3.0.3
-Flask-Migrate==2.6.0
 Flask-Cors==3.0.8
 psycopg2==2.9.5
 Jinja2<3.1
@@ -10,3 +8,7 @@ dependency-injector==4.40.0
 python-dotenv==0.21.0
 marshmallow==3.5.0
 werkzeug==2.2.2
+SQLAlchemy==2.0.22
+Flask-Migrate==2.6.0
+PyJWT==2.8.0
+redis==5.0.1
