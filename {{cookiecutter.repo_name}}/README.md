@@ -1,1 +1,1 @@
-# Service
+# {{cookiecutter.project_name}} service
