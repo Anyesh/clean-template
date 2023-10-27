@@ -35,7 +35,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.environ.get(SQLALCHEMY_DATABASE_URI)
     REDIS_URL = os.environ.get(REDIS_URL)
-    SERVICE_PREFIX = os.environ.get(SERVICE_PREFIX, "")
+    SERVICE_PREFIX = os.environ.get(SERVICE_PREFIX, "/{{cookiecutter.repo_name}}")
     SECRET_KEY = os.environ.get(SECRET_KEY, "secret-key")
     SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", "localhost")
     SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "session")

@@ -5,9 +5,9 @@ RUN pip install --upgrade pip && pip install pip-tools
 RUN apt-get install -y --no-install-recommends g++
 
 WORKDIR /app
-COPY . .
-
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-EXPOSE 7000
-CMD gunicorn wsgi:app -b  0.0.0.0:7000 --workers=1 --preload
+COPY . .
+
+EXPOSE {{cookiecutter.port}}

@@ -1,3 +1,4 @@
 {
-  "repo_name": "Your Project Name"
+  "repo_name": "Your Project Name",
+  "port": "Which port to run on"
 }
