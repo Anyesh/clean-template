@@ -1,13 +1,13 @@
 from flask import Flask
-
-from src.api import setup_prefix_middleware, setup_blueprints
+from src.api import setup_blueprints
 from src.cors import setup_cors
 from src.dependency_container import setup_dependency_container
-from src.error_handler import setup_error_handler
-from src.infrastructure import setup_sqlalchemy, setup_redis
-from src.logging import setup_logging
 from src.domain import SERVICE_PREFIX
+from src.error_handler import setup_error_handler
+from src.infrastructure import setup_redis, setup_sqlalchemy
+from src.logging import setup_logging
 from src.management import setup_management
+from totoro_common.middlewares import setup_prefix_middleware
 
 
 def create_app(
@@ -15,7 +15,7 @@ def create_app(
     dependency_container_packages=None,
     dependency_container_modules=None,
 ):
-    app = Flask(__name__.split('.')[0])
+    app = Flask(__name__.split(".")[0])
     app.db = None
     app = setup_logging(app)
     app.config.from_object(config)
@@ -32,6 +32,6 @@ def create_app(
     app = setup_dependency_container(
         app,
         packages=dependency_container_packages,
-        modules=dependency_container_modules
+        modules=dependency_container_modules,
     )
     return app

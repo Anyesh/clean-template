@@ -2,9 +2,9 @@ import logging
 
 from dependency_injector.wiring import Provide, inject
 from flask import Blueprint, jsonify
-from src.api.responses import create_response
 from src.api.schemas import ServiceContextSchema
 from src.dependency_container import DependencyContainer
+from totoro_common.responses import create_response
 
 logger = logging.getLogger(__name__)
 blueprint = Blueprint("service_context", __name__)

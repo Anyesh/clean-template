@@ -13,7 +13,7 @@ from .constants import (
     SESSION_COOKIE_NAME,
     COOKIE_ALGORITHM,
 )
-from .exceptions import (
+from totoro_common.exceptions import (
     ApiException,
     ClientException,
     NoDataProvidedApiException,
