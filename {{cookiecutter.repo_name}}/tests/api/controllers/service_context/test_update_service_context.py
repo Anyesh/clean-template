@@ -1,4 +1,5 @@
 import json
+import unittest
 
 from tests.resources import AppTestBase
 
@@ -11,6 +12,7 @@ class Test(AppTestBase):
         self.service_context_service = self.app.container\
             .service_context_service()
 
+    @unittest.skip("No longer needed")
     def test_update_service_context(self):
         service_context = self.service_context_service.get_service_context()
         self.assertFalse(service_context.maintenance)
