@@ -59,3 +59,9 @@ class DatabaseSession:
 
     def get_session(self):
         return self.session
+
+    def create_all(self):
+        self.metadata.create_all(self.engine)
+    
+    def drop_all(self):
+        self.metadata.drop_all(self.engine)
