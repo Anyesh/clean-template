@@ -45,7 +45,7 @@ class DatabaseSession:
         app.config.setdefault('SQLALCHEMY_DATABASE_URI', db_uri)
         app.teardown_appcontext(self.teardown)
 
-        engine = create_engine(db_uri, connect_args={'check_same_thread': False}, poolclass=StaticPool)
+        engine = create_engine(db_uri, poolclass=StaticPool)  # connect_args={'check_same_thread': False} for sqlite 
         self.session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
         self.engine = engine
 

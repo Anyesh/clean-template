@@ -1,13 +1,9 @@
 import logging
 
-from flask_migrate import Migrate
-
-migrate = Migrate()
 logger = logging.getLogger(__name__)
 
 
 def setup_management(app):
-    migrate.init_app(app, app.db)
 
     @app.cli.command("show_db_tables")
     def show_db_tables():
