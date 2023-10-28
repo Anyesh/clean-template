@@ -1,1 +1,1 @@
-# {{cookiecutter.repo_name}} service
+# {{cookiecutter.repo_name}}
