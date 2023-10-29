@@ -6,7 +6,7 @@ from src.domain import LOG_LEVEL
 
 
 def setup_logging(app):
-    log_level = app.config.get(LOG_LEVEL)
+    log_level = app.config.get(LOG_LEVEL) or logging.INFO
     logging_config = {
         'version': 1,
         'disable_existing_loggers': False,
@@ -35,8 +35,8 @@ def setup_logging(app):
     @app.after_request
     def after_request(response):
         """ Logging after every request. """
-        logger = logging.getLogger("app.access")
-        logger.info(
+        logger = logging.getLogger("totoro")
+        logger.error(
             "%s %s %s %s %s",
             request.method,
             request.path,

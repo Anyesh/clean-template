@@ -23,7 +23,7 @@ def check_for_maintenance():
             )
 
 
-@app.teardown_appcontext
+@app.teardown_request
 def teardown_db(exception=None):
     if app.db is not None:
         if exception is None:
