@@ -40,6 +40,7 @@ class Config(object):
     SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", ".localhost")
     SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "session")
     SESSION_COOKIE_AGE = os.environ.get("SESSION_COOKIE_AGE", 3600)
+    COOKIE_ALGORITHM = os.environ.get("COOKIE_ALGORITHM", "HS256")
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item
