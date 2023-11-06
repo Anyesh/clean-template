@@ -1,6 +1,8 @@
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Callable
+
+from flask import current_app
 
 from src.domain import (
     DEFAULT_PAGE_VALUE,
@@ -11,7 +13,6 @@ from src.domain import (
     PER_PAGE,
     ApiException,
 )
-from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -74,8 +75,9 @@ class Repository(ABC):
     def get(self, object_id):
         return self.session.query(self.base_class).filter_by(id=object_id).one()
 
+    @abstractmethod
     def _apply_query_params(self, query, query_params):
-        return query
+        raise NotImplementedError
 
     def apply_query_params(self, query, query_params):
         if query_params is not None:
