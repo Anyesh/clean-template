@@ -6,7 +6,7 @@ from src.error_handler import setup_error_handler
 from src.infrastructure import setup_redis, setup_sqlalchemy, SERVICE_PREFIX
 from src.logging import setup_logging
 from src.management import setup_management
-from totoro_common.middlewares import setup_prefix_middleware
+from totoro.common.middlewares import setup_prefix_middleware
 
 
 def create_app(
