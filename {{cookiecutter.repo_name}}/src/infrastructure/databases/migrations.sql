@@ -1,1 +1,0 @@
--- All Migrations related to {{cookiecutter.repo_name}} should live here
