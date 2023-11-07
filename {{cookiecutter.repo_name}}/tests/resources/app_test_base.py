@@ -4,8 +4,7 @@ from flask_testing import TestCase
 from src import api
 from src.config import Config
 from src.create_app import create_app
-from src.domain import SQLALCHEMY_DATABASE_URI
-from src.infrastructure import setup_sqlalchemy
+from src.infrastructure import SQLALCHEMY_DATABASE_URI, setup_sqlalchemy
 
 # from testcontainers.postgres import PostgresContainer
 
@@ -33,7 +32,7 @@ class AppTestBase(TestCase):
         try:
             # return PostgresContainer(image="postgres:14").start()
             raise NotImplementedError("PostgresContainer is not supported")
-        except Exception as e:
+        except Exception:
             return SqliteDBContainer()
 
     def teardown_database(self):

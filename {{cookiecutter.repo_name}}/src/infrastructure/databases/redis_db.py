@@ -1,5 +1,5 @@
 from redis import Redis
-from src.domain import REDIS_URL, OperationalException
+from src.infrastructure import REDIS_URL, OperationalException
 
 def setup_redis(app, throw_exception_if_not_set=True):
     try:
@@ -17,4 +17,3 @@ class RedisAdapter:
             app.redis = Redis.from_url(app.config[REDIS_URL])
         elif not app.config["TESTING"]:
             raise OperationalException("REDIS_URL not set")
-

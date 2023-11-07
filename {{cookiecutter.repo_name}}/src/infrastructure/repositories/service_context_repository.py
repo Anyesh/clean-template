@@ -1,4 +1,4 @@
-from src.domain.models import ServiceContext
+from src.infrastructure.models import ServiceContext
 
 from .repository import Repository
 

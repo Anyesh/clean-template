@@ -2,7 +2,7 @@ import logging.config
 
 from flask import request
 
-from src.domain import LOG_LEVEL
+from src.infrastructure import LOG_LEVEL
 
 
 def setup_logging(app):

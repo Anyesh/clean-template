@@ -14,7 +14,7 @@ from sqlalchemy.orm import (
 )
 from sqlalchemy.pool import StaticPool
 
-from src.domain import SQLALCHEMY_DATABASE_URI, OperationalException
+from src.infrastructure import SQLALCHEMY_DATABASE_URI, OperationalException
 
 
 class Base(MappedAsDataclass, DeclarativeBase):

@@ -2,9 +2,8 @@ from flask import Flask
 from src.api import setup_blueprints
 from src.cors import setup_cors
 from src.dependency_container import setup_dependency_container
-from src.domain import SERVICE_PREFIX
 from src.error_handler import setup_error_handler
-from src.infrastructure import setup_redis, setup_sqlalchemy
+from src.infrastructure import setup_redis, setup_sqlalchemy, SERVICE_PREFIX
 from src.logging import setup_logging
 from src.management import setup_management
 from totoro_common.middlewares import setup_prefix_middleware

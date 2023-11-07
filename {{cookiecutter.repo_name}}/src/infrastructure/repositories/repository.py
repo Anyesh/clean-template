@@ -4,7 +4,7 @@ from typing import Callable
 
 from flask import current_app
 
-from src.domain import (
+from src.infrastructure import (
     DEFAULT_PAGE_VALUE,
     DEFAULT_PER_PAGE_VALUE,
     ITEMIZE,

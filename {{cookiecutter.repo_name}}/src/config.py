@@ -3,7 +3,7 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from .domain import (
+from src.infrastructure import (
     LOG_LEVEL,
     REDIS_URL,
     SECRET_KEY,
