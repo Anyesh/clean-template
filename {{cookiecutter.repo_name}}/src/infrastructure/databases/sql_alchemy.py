@@ -1,8 +1,8 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import request
-from sqlalchemy import create_engine, event
+from sqlalchemy import DateTime, Integer, create_engine, event
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -22,14 +22,12 @@ class Base(MappedAsDataclass, DeclarativeBase):
 
 
 class Mixin(MappedAsDataclass):
-    created_by: Mapped[int] = mapped_column(int, nullable=False)
-    updated_by: Mapped[int] = mapped_column(int, nullable=False)
+    created_by: Mapped[int] = mapped_column(Integer, nullable=False)
+    updated_by: Mapped[int] = mapped_column(Integer, nullable=False)
 
-    created_at: Mapped[datetime] = mapped_column(
-        datetime, nullable=False, default=datetime.utcnow
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     updated_at: Mapped[datetime] = mapped_column(
-        datetime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime, nullable=False, onupdate=datetime.utcnow
     )
 
 
@@ -80,19 +78,21 @@ class DatabaseSession:
 
         @event.listens_for(Session, "before_commit")
         def before_commit(session):
-            user_id = 0 # Anon user
+            user_id = 0  # Anon user
             for obj in session.new:
                 if isinstance(obj, Mixin):
                     if hasattr(request, "user"):
                         user_id = request.user.get("id")
                     obj.created_by = user_id
                     obj.updated_by = user_id
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
             for obj in session.dirty:
                 if isinstance(obj, Mixin):
                     if hasattr(request, "user"):
                         user_id = request.user.get("id")
                     obj.updated_by = user_id
-
+                    obj.updated_at = datetime.now(timezone.utc)
 
     def teardown(self, exception=None):
         if hasattr(self, "session"):
