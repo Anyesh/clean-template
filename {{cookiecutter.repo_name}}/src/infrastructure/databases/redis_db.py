@@ -1,5 +1,7 @@
 from redis import Redis
+
 from src.infrastructure import REDIS_URL, OperationalException
+
 
 def setup_redis(app, throw_exception_if_not_set=True):
     try:

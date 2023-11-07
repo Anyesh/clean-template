@@ -6,4 +6,4 @@ def setup_blueprints(app) -> None:
     return app
 
 
-__all__ = ['setup_blueprints']
+__all__ = ["setup_blueprints"]

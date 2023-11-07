@@ -1,4 +1,4 @@
-from totoro.common.exceptions import (
+from totoro.helpers.exceptions import (
     ApiException,
     ClientException,
     NoDataProvidedApiException,
