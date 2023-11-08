@@ -8,3 +8,6 @@ class ServiceContextRepository(Repository):
 
     def get_first(self):
         return self.session.query(self.base_class).first()
+
+    def _apply_query_params(self, query, query_params):
+        raise NotImplementedError
