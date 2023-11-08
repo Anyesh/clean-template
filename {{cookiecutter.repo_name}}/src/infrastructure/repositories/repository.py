@@ -65,12 +65,26 @@ class Repository(ABC):
 
     def get_all(self, query_params=None):
         query_set = self.session.query(self.base_class)
-        query_set = self.apply_query_params(query_set, query_params)
+        query_set.paginate = self.paginate(query_set)
+        model_params = self._pop_page_param(query_params)
+        query_set = self.apply_query_params(query_set, model_params)
 
         if self.is_itemized(query_params):
             return self.create_itemization(query_set)
 
         return self.create_pagination(query_params, query_set)
+
+    @staticmethod
+    def paginate(query):
+        def inner(page, per_page):
+            q = query.limit(per_page).offset((page - 1) * per_page)
+            q.total = query.count()
+            q.page = page
+            q.per_page = per_page
+            q.items =  q.all()
+            return q
+
+        return inner
 
     def get(self, object_id):
         return self.session.query(self.base_class).filter_by(id=object_id).one()
@@ -137,6 +151,14 @@ class Repository(ABC):
             params = params.to_dict(flat=False)
 
         return {k: self.normalize_query_param(v) for k, v in params.items()}
+
+    @staticmethod
+    def _pop_page_param(query_params):
+        if isinstance(query_params, dict):
+            q = query_params.copy()
+            q.pop(PAGE, None)
+            q.pop(PER_PAGE, None)
+            return q
 
     def get_query_param(self, key, params, default=None, many=False):
         boolean_array = ["true", "false"]
