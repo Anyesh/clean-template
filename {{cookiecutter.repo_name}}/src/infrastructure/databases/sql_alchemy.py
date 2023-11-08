@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timezone
+from datetime import datetime
 
 from flask import request
 from sqlalchemy import DateTime, Integer, create_engine, event
@@ -7,7 +7,6 @@ from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
     MappedAsDataclass,
-    Session,
     mapped_column,
     scoped_session,
     sessionmaker,
@@ -22,12 +21,12 @@ class Base(MappedAsDataclass, DeclarativeBase):
 
 
 class Mixin(MappedAsDataclass):
-    created_by: Mapped[int] = mapped_column(Integer, nullable=False)
-    updated_by: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_by: Mapped[int] = mapped_column(Integer, init=False)
+    updated_by: Mapped[int] = mapped_column(Integer, init=False)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, init=False)
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, nullable=False, onupdate=datetime.utcnow
+        DateTime, onupdate=datetime.utcnow, init=False
     )
 
 
@@ -76,8 +75,8 @@ class DatabaseSession:
         def connect(dbapi_connection, connection_record):
             connection_record.info["pid"] = os.getpid()
 
-        @event.listens_for(Session, "before_commit")
-        def before_commit(session):
+        @event.listens_for(self.session, "before_flush")
+        def before_flush(session, flush_context, instances):
             user_id = 0  # Anon user
             for obj in session.new:
                 if isinstance(obj, Mixin):
@@ -85,14 +84,14 @@ class DatabaseSession:
                         user_id = request.user.get("id")
                     obj.created_by = user_id
                     obj.updated_by = user_id
-                    obj.created_at = datetime.now(timezone.utc)
-                    obj.updated_at = datetime.now(timezone.utc)
+                    obj.created_at = datetime.utcnow()
+                    obj.updated_at = datetime.utcnow()
             for obj in session.dirty:
                 if isinstance(obj, Mixin):
                     if hasattr(request, "user"):
                         user_id = request.user.get("id")
                     obj.updated_by = user_id
-                    obj.updated_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.utcnow()
 
     def teardown(self, exception=None):
         if hasattr(self, "session"):
