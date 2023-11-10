@@ -4,10 +4,14 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from src.infrastructure import (
+    COOKIE_ALGORITHM,
     LOG_LEVEL,
     REDIS_URL,
     SECRET_KEY,
     SERVICE_PREFIX,
+    SESSION_COOKIE_AGE,
+    SESSION_COOKIE_DOMAIN,
+    SESSION_COOKIE_NAME,
     SQLALCHEMY_DATABASE_URI,
 )
 
@@ -37,10 +41,10 @@ class Config(object):
     REDIS_URL = os.environ.get(REDIS_URL)
     SERVICE_PREFIX = os.environ.get(SERVICE_PREFIX, "/{{cookiecutter.repo_name}}")
     SECRET_KEY = os.environ.get(SECRET_KEY, "secret-key")
-    SESSION_COOKIE_DOMAIN = os.environ.get("SESSION_COOKIE_DOMAIN", ".localhost")
-    SESSION_COOKIE_NAME = os.environ.get("SESSION_COOKIE_NAME", "session")
-    SESSION_COOKIE_AGE = os.environ.get("SESSION_COOKIE_AGE", 3600)
-    COOKIE_ALGORITHM = os.environ.get("COOKIE_ALGORITHM", "HS256")
+    SESSION_COOKIE_DOMAIN = os.environ.get(SESSION_COOKIE_DOMAIN, ".localhost")
+    SESSION_COOKIE_NAME = os.environ.get(SESSION_COOKIE_NAME, "session")
+    SESSION_COOKIE_AGE = os.environ.get(SESSION_COOKIE_AGE, 3600)
+    COOKIE_ALGORITHM = os.environ.get(COOKIE_ALGORITHM, "HS256")
 
     def __setitem__(self, key, item):
         self.__dict__[key] = item
