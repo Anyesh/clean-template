@@ -15,6 +15,5 @@ docs/_build
 *.sqlite3
 *.db
 *.csv
-.vscode
 *.json
 *.pyc
