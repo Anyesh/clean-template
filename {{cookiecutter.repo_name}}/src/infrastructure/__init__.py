@@ -17,6 +17,8 @@ from .constants import (
     REDIS_URL,
     SECRET_KEY,
     SERVICE_PREFIX,
+    SESSION_COOKIE_AGE,
+    SESSION_COOKIE_DOMAIN,
     SESSION_COOKIE_NAME,
     SQLALCHEMY_DATABASE_URI,
 )
@@ -47,4 +49,6 @@ __all__ = [
     "declarative_base",
     "Repository",
     "ServiceContextService",
+    "SESSION_COOKIE_DOMAIN",
+    "SESSION_COOKIE_AGE",
 ]
