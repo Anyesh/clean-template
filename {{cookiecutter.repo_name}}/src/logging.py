@@ -36,7 +36,7 @@ def setup_logging(app):
     def after_request(response):
         """ Logging after every request. """
         logger = logging.getLogger("totoro")
-        logger.error(
+        logger.info(
             "%s %s %s %s %s",
             request.method,
             request.path,
