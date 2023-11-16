@@ -16,3 +16,6 @@ docs/_build
 *.db
 *.csv
 *.pyc
+.totoro
+.pytest_cache
+.mypy_cache
