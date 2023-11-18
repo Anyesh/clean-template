@@ -3,6 +3,7 @@ from datetime import datetime
 
 from flask import request
 from sqlalchemy import DateTime, Integer, create_engine, event
+from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -54,22 +55,30 @@ class DatabaseSession:
         self.db_uri = db_uri
         self.session = None
         self.engine = None
+        self.base = None
         self.metadata = Base.metadata
 
         if app is not None and db_uri is not None:
             self.init_app(app, db_uri)
 
-    def init_app(self, app, db_uri):
-        app.config.setdefault("SQLALCHEMY_DATABASE_URI", db_uri)
-        app.teardown_appcontext(self.teardown)
-
+    def create_engine(self, db_uri):
         engine = create_engine(
             db_uri, poolclass=StaticPool
         )  # connect_args={'check_same_thread': False} for sqlite
+        self.metadata.reflect(bind=engine)
         self.session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=engine)
         )
         self.engine = engine
+        self.base = automap_base(metadata=self.metadata)
+        self.base.prepare()
+        return engine
+
+    def init_app(self, app, db_uri):
+        app.config.setdefault("SQLALCHEMY_DATABASE_URI", db_uri)
+        app.teardown_appcontext(self.teardown)
+
+        engine = self.create_engine(db_uri)
 
         @event.listens_for(engine, "connect")
         def connect(dbapi_connection, connection_record):
