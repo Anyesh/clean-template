@@ -1,8 +1,6 @@
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Callable
-
-from flask import current_app
 
 from src.infrastructure import (
     DEFAULT_PAGE_VALUE,
@@ -24,8 +22,8 @@ class Repository(ABC):
     DEFAULT_PAGE = DEFAULT_PAGE_VALUE
     session = None
 
-    def __init__(self, session=None):
-        self.session = session or current_app.db.session
+    def __init__(self, session):
+        self.session = session
 
     def save(self, entity):
         self.session.add(entity)
@@ -65,33 +63,18 @@ class Repository(ABC):
 
     def get_all(self, query_params=None):
         query_set = self.session.query(self.base_class)
-        query_set.paginate = self.paginate(query_set)
-        model_params = self._pop_page_param(query_params)
-        query_set = self.apply_query_params(query_set, model_params)
+        query_set = self.apply_query_params(query_set, query_params)
 
         if self.is_itemized(query_params):
             return self.create_itemization(query_set)
 
         return self.create_pagination(query_params, query_set)
 
-    @staticmethod
-    def paginate(query):
-        def inner(page, per_page):
-            q = query.limit(per_page).offset((page - 1) * per_page)
-            q.total = query.count()
-            q.page = page
-            q.per_page = per_page
-            q.items =  q.all()
-            return q
-
-        return inner
-
     def get(self, object_id):
         return self.session.query(self.base_class).filter_by(id=object_id).one()
 
-    @abstractmethod
     def _apply_query_params(self, query, query_params):
-        raise NotImplementedError
+        return query
 
     def apply_query_params(self, query, query_params):
         if query_params is not None:
@@ -151,14 +134,6 @@ class Repository(ABC):
             params = params.to_dict(flat=False)
 
         return {k: self.normalize_query_param(v) for k, v in params.items()}
-
-    @staticmethod
-    def _pop_page_param(query_params):
-        if isinstance(query_params, dict):
-            q = query_params.copy()
-            q.pop(PAGE, None)
-            q.pop(PER_PAGE, None)
-            return q
 
     def get_query_param(self, key, params, default=None, many=False):
         boolean_array = ["true", "false"]

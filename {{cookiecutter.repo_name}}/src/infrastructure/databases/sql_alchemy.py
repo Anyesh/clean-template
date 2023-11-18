@@ -1,13 +1,15 @@
 import os
+from contextlib import contextmanager
 from datetime import datetime
 
 from flask import request
-from sqlalchemy import DateTime, Integer, create_engine, event
+from sqlalchemy import DateTime, Engine, Integer, create_engine, event
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
     MappedAsDataclass,
+    Session,
     mapped_column,
     scoped_session,
     sessionmaker,
@@ -34,7 +36,7 @@ class Mixin(MappedAsDataclass):
 class SQLAlchemyAdapter:
     def __init__(self, app):
         if app.config[SQLALCHEMY_DATABASE_URI] is not None:
-            app.db = DatabaseSession(app, app.config[SQLALCHEMY_DATABASE_URI])
+            DatabaseSession(app, app.config[SQLALCHEMY_DATABASE_URI])
         elif not app.config["TESTING"]:
             raise OperationalException("SQLALCHEMY_DATABASE_URI not set")
 
@@ -49,44 +51,73 @@ def setup_sqlalchemy(app, throw_exception_if_not_set=True):
     return app
 
 
-class DatabaseSession:
+class Borg:
+    _shared_state: dict[str, str] = {}
+
+    def __init__(self) -> None:
+        self.__dict__ = self._shared_state
+
+
+class DatabaseSession(Borg):
     def __init__(self, app=None, db_uri=None):
+        super().__init__()
         self.app = app
         self.db_uri = db_uri
-        self.session = None
-        self.engine = None
-        self.base = None
         self.metadata = Base.metadata
+        self.engine = self.create_engine(db_uri)
+        self.session = self.create_session()
+        self.base = None
 
         if app is not None and db_uri is not None:
             self.init_app(app, db_uri)
 
-    def create_engine(self, db_uri):
+    @contextmanager
+    def session_context(self):
+        session = self.session()
+        try:
+            yield session
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
+    def create_session(self) -> scoped_session[Session]:
+        if hasattr(self, "session"):
+            return self.session
+
+        return scoped_session(
+            sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
+        )
+
+    def create_engine(self, db_uri) -> Engine:
+        if hasattr(self, "engine"):
+            return self.engine
+
         engine = create_engine(
             db_uri, poolclass=StaticPool
         )  # connect_args={'check_same_thread': False} for sqlite
-        self.metadata.reflect(bind=engine)
-        self.session = scoped_session(
-            sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        )
-        self.engine = engine
+
         self.base = automap_base(metadata=self.metadata)
         self.base.prepare()
         return engine
 
     def init_app(self, app, db_uri):
+        self.app = app
         app.config.setdefault("SQLALCHEMY_DATABASE_URI", db_uri)
         app.teardown_appcontext(self.teardown)
 
-        engine = self.create_engine(db_uri)
+        self.metadata.reflect(bind=self.engine)
 
-        @event.listens_for(engine, "connect")
+        app.db = self
+
+        @event.listens_for(self.engine, "connect")
         def connect(dbapi_connection, connection_record):
             connection_record.info["pid"] = os.getpid()
 
         @event.listens_for(self.session, "before_flush")
         def before_flush(session, flush_context, instances):
-            user_id = 0  # Anon user
+            user_id = None  # Anon user
             for obj in session.new:
                 if isinstance(obj, Mixin):
                     if hasattr(request, "user"):
@@ -101,6 +132,8 @@ class DatabaseSession:
                         user_id = request.user.get("id")
                     obj.updated_by = user_id
                     obj.updated_at = datetime.utcnow()
+
+        return app
 
     def teardown(self, exception=None):
         if hasattr(self, "session"):
