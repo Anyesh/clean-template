@@ -25,9 +25,11 @@ class Repository(ABC):
     def __init__(self, session):
         self.session = session
 
-    def save(self, entity):
+    def save(self, entity, commit=False):
         self.session.add(entity)
         self.session.flush()
+        if commit:
+            self.session.commit()
         return entity
 
     def create(self, data):

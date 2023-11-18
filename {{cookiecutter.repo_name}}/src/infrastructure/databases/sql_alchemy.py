@@ -120,7 +120,7 @@ class DatabaseSession(Borg):
             user_id = None  # Anon user
             for obj in session.new:
                 if isinstance(obj, Mixin):
-                    if hasattr(request, "user"):
+                    if request and hasattr(request, "user"):
                         user_id = request.user.get("id")
                     obj.created_by = user_id
                     obj.updated_by = user_id
@@ -128,7 +128,7 @@ class DatabaseSession(Borg):
                     obj.updated_at = datetime.utcnow()
             for obj in session.dirty:
                 if isinstance(obj, Mixin):
-                    if hasattr(request, "user"):
+                    if request and hasattr(request, "user"):
                         user_id = request.user.get("id")
                     obj.updated_by = user_id
                     obj.updated_at = datetime.utcnow()
