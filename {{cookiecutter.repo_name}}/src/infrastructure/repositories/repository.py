@@ -79,9 +79,6 @@ class Repository(ABC):
     def _apply_query_params(self, query, query_params):
         raise NotImplementedError
 
-    def _add_paginate_properties(self, query, query_params):
-        ...
-
     def apply_query_params(self, query, query_params):
         if query_params is not None:
             query = self._apply_query_params(query, query_params)

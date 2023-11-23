@@ -59,7 +59,7 @@ def setup_error_handler(app):
             return create_error_response("The requested resource was not found", 404)
         else:
             # Internal error happened that was unknown
-            return "Internal server error", 500
+            return create_error_response("Something went wrong! It's either you or us. Please try again later", 500)
 
     app.errorhandler(Exception)(error_handler)
     return app
