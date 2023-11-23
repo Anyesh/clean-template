@@ -1,5 +1,5 @@
 import logging
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Callable
 
 from src.infrastructure import (
@@ -75,8 +75,12 @@ class Repository(ABC):
     def get(self, object_id):
         return self.session.query(self.base_class).filter_by(id=object_id).one()
 
+    @abstractmethod
     def _apply_query_params(self, query, query_params):
-        return query
+        raise NotImplementedError
+
+    def _add_paginate_properties(self, query, query_params):
+        ...
 
     def apply_query_params(self, query, query_params):
         if query_params is not None:
@@ -184,7 +188,9 @@ class Repository(ABC):
         except ValueError:
             per_page = self.DEFAULT_PER_PAGE
 
-        paginated = query_set.paginate(page=int(page), per_page=int(per_page))
+        paginated = PaginatedQuery(query_set).paginate(
+            page=int(page), per_page=int(per_page)
+        )
         return {
             "total": paginated.total,
             "page": paginated.page,
@@ -194,3 +200,24 @@ class Repository(ABC):
 
     def create_itemization(self, query_set):
         return {"items": query_set.all()}
+
+
+class PaginatedQuery:
+    def __init__(self, query):
+        self._query = query
+        self.page = None
+        self.per_page = None
+        self.total = None
+        self.items = None
+
+    def paginate(self, page, per_page):
+        self.page = page
+        self.per_page = per_page
+
+        self.total = self._query.count()
+        self.items = (
+            self._query.limit(self.per_page)
+            .offset((self.page - 1) * self.per_page)
+            .all()
+        )
+        return self
