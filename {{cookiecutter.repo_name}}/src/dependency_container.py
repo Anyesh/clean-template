@@ -20,8 +20,17 @@ class DependencyContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
     wiring_config = containers.WiringConfiguration()
 
-    db_session = providers.Singleton(DatabaseSession, db_uri=Config.SQLALCHEMY_DATABASE_URI)
+    db_session = providers.Singleton(
+        DatabaseSession, db_uri=Config.SQLALCHEMY_DATABASE_URI
+    )
     redis_session = providers.Singleton(RedisSession, redis_uri=Config.REDIS_URL)
 
-    sc_repository = providers.Factory(ServiceContextRepository, session=db_session.provided.session)
-    service_context_service = providers.Factory(ServiceContextService, repository=sc_repository)
+    sc_repository = providers.Factory(
+        ServiceContextRepository, session=db_session.provided.session
+    )
+    service_context_service = providers.Factory(
+        ServiceContextService, repository=sc_repository
+    )
+
+    # Put your services/repositories here
+    # ---
