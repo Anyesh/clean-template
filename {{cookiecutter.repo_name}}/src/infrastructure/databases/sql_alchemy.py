@@ -71,6 +71,15 @@ class DatabaseSession(Borg):
         if app is not None and db_uri is not None:
             self.init_app(app, db_uri)
 
+    @property
+    def mapped_base(self):
+        # Usage: current_app.db.mapped_base.classes.user(tablename)
+        if self.base is None:
+            self.metadata.reflect(bind=self.engine)
+            self.base = automap_base(metadata=self.metadata)
+            self.base.prepare()
+        return self.base
+
     @contextmanager
     def session_context(self):
         session = self.session()
@@ -97,17 +106,12 @@ class DatabaseSession(Borg):
         engine = create_engine(
             db_uri, poolclass=StaticPool
         )  # connect_args={'check_same_thread': False} for sqlite
-
-        self.base = automap_base(metadata=self.metadata)
-        self.base.prepare()
         return engine
 
     def init_app(self, app, db_uri):
         self.app = app
         app.config.setdefault("SQLALCHEMY_DATABASE_URI", db_uri)
         app.teardown_appcontext(self.teardown)
-
-        self.metadata.reflect(bind=self.engine)
 
         app.db = self
 
