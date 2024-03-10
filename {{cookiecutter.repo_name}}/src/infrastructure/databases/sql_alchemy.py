@@ -133,6 +133,22 @@ class DatabaseSession(Borg):
                     obj.updated_by = user_id
                     obj.updated_at = datetime.utcnow()
 
+        @event.listens_for(self.engine, 'before_execute', retval=True)
+        def intercept(conn, clauseelement, multiparams, params):
+            from sqlalchemy.sql.selectable import Select
+
+            # check if it's select statement
+            if isinstance(clauseelement, Select):
+                # 'froms' represents list of tables that statement is querying
+                table = clauseelement.froms[0]
+
+                # adding filter in clause
+                if hasattr(table.c, 'is_deleted'):
+                    clauseelement = clauseelement.where(table.c.is_deleted == False)
+
+
+            return clauseelement, multiparams, params
+
         return app
 
     def teardown(self, exception=None):
