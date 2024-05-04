@@ -138,7 +138,7 @@ class DatabaseSession(Borg):
                     obj.updated_at = datetime.utcnow()
 
         @event.listens_for(self.engine, 'before_execute', retval=True)
-        def intercept(conn, clauseelement, multiparams, params):
+        def intercept(conn, clauseelement, multiparams, params, execution_options):
             from sqlalchemy.sql.selectable import Select
 
             # check if it's select statement
